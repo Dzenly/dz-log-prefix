@@ -1,0 +1,24 @@
+{
+  "name": "dz-log-prefix",
+  "version": "0.0.1",
+  "description": "Adds prefix to logger functions.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dzenly/dz-log-prefix"
+  },
+  "keywords": [
+    "winston",
+    "logger",
+    "prefix",
+    "log"
+  ],
+  "author": "Dzenly <alexchem@yandex.ru>",
+  "license": "MIT"
+}

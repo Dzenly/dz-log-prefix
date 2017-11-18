@@ -13,15 +13,16 @@ winston.info('Winston info log.');
 // info: My Prefix1: prefixedLogger1 info log.
 prefixedLogger1.info('prefixedLogger1 info log.');
 
-// winston.level - works.
+// Doesn't work !!!
 prefixedLogger1.level = 'error';
 
-// info: My Prefix1: prefixedLogger1 info log.
-prefixedLogger1.info('prefixedLogger1 info log.');
+// info: My Prefix1: prefixedLogger1 String still in the log, cause prefixedLogger1 is a newly created object, it is not winston object.
+prefixedLogger1.info('prefixedLogger1 String still in the log, cause prefixedLogger1 is a newly created object, it is not winston object.');
 
+// Works !!!
 winston.level = 'error';
-// Bingo ! Nothing in the log.
-prefixedLogger1.info('prefixedLogger1 info log.');
+//
+prefixedLogger1.info('This string should not be in the log.');
 
 winston.level = 'silly';
 

@@ -13,6 +13,18 @@ winston.info('Winston info log.');
 // info: My Prefix1: prefixedLogger1 info log.
 prefixedLogger1.info('prefixedLogger1 info log.');
 
+// winston.level - works.
+prefixedLogger1.level = 'error';
+
+// info: My Prefix1: prefixedLogger1 info log.
+prefixedLogger1.info('prefixedLogger1 info log.');
+
+winston.level = 'error';
+// Bingo ! Nothing in the log.
+prefixedLogger1.info('prefixedLogger1 info log.');
+
+winston.level = 'silly';
+
 // info: My Prefix2: prefixedLogger2 info log.
 prefixedLogger2.info('prefixedLogger2 info log.');
 

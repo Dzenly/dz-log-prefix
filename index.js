@@ -1,18 +1,18 @@
 'use strict';
 
 const callsite = require('callsite');
-const fs = require('fs');
-var os = require('os');
+// const fs = require('fs');
+const os = require('os');
 
 function getSrcInfo(stack) {
   const call = stack[1];
   const file = call.getFileName();
   const lineno = call.getLineNumber();
-  let src = fs.readFileSync(file, 'utf8');
-  const line = src.split('\n')[lineno - 1].trim();
+  // let src = fs.readFileSync(file, 'utf8');
+  // const line = src.split('\n')[lineno - 1].trim();
   return {
     fileLineNo: `${file}: ${lineno}`,
-    line,
+    // line,
   };
 }
 
@@ -35,8 +35,9 @@ exports.addPrefixToLogFunc = function (logger, funcName, prefix = '') {
     const prefixArgIndex = funcName === 'log' ? 1 : 0;
 
     if (showStack && args[args.length - 1] !== token) {
-      const {fileLineNo, line} = getSrcInfo(callsite());
-      const suffix = `${os.EOL}FILE: ${fileLineNo}${os.EOL}LINE: ${line}${os.EOL}`;
+      const {fileLineNo/*, line*/} = getSrcInfo(callsite());
+      // LINE: ${line}${os.EOL}
+      const suffix = `${os.EOL}FILE: ${fileLineNo}${os.EOL}`;
       args[args.length - 1] += suffix;
       args.push(token);
     }

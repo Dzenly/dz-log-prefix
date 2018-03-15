@@ -7,29 +7,32 @@ const prefixedLogger1 = dzLogPrefix.addPrefixToCommonLogFuncs(winston, 'My Prefi
 
 const prefixedLogger2 = dzLogPrefix.addPrefixToCommonLogFuncs(winston, 'My Prefix2: ');
 
-// info: Winston info log.
-winston.info('Winston info log.');
+// info: Winston info msg.
+winston.info('Winston info msg.');
 
-// info: My Prefix1: prefixedLogger1 info log.
-prefixedLogger1.info('prefixedLogger1 info log.');
+// info: My Prefix1: prefixedLogger1 info msg.
+prefixedLogger1.info('prefixedLogger1 info msg.');
 
 // Doesn't work !!!
 prefixedLogger1.level = 'error';
 
-// info: My Prefix1: prefixedLogger1 String still in the log, cause prefixedLogger1 is a newly created object, it is not winston object.
-prefixedLogger1.info('prefixedLogger1 String still in the log, cause prefixedLogger1 is a newly created object, it is not winston object.');
+// info: My Prefix1: prefixedLogger1 String still in the msg, cause prefixedLogger1 is a newly created object, it is not winston object.
+prefixedLogger1.info('prefixedLogger1 String still in the msg, cause prefixedLogger1 is a newly created object, it is not winston object.');
 
 // Works !!!
 winston.level = 'error';
 //
-prefixedLogger1.info('This string should not be in the log.');
+prefixedLogger1.info('This string should not be in the msg.');
 
 winston.level = 'silly';
 
-// info: My Prefix2: prefixedLogger2 info log.
-prefixedLogger2.info('prefixedLogger2 info log.');
+// info: My Prefix2: prefixedLogger2 info msg.
+prefixedLogger2.info('prefixedLogger2 info msg.');
 
 const doublePrefixedLogger1 = dzLogPrefix.addPrefixToCommonLogFuncs(prefixedLogger1, 'My PostPrefix1: ');
 
-// info: My Prefix1: My PostPrefix1: doublePrefixedLogger1 info log.
-doublePrefixedLogger1.info('doublePrefixedLogger1 info log.');
+// info: My Prefix1: My PostPrefix1: doublePrefixedLogger1 info msg.
+doublePrefixedLogger1.info('doublePrefixedLogger1 info msg.');
+
+// info: My Prefix1: My PostPrefix1: doublePrefixedLogger1 log(info, msg)
+doublePrefixedLogger1.log('info', 'doublePrefixedLogger1 log(info, msg).');

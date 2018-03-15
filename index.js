@@ -9,7 +9,9 @@
  */
 exports.addPrefixToLogFunc = function (logger, funcName, prefix) {
   return function () {
-    arguments[0] = prefix + arguments[0];
+    console.log(funcName, arguments.length);
+    const prefixArgIndex = funcName === 'log' ? 1 : 0;
+    arguments[prefixArgIndex] = prefix + arguments[prefixArgIndex];
     return logger[funcName].apply(logger, arguments);
   };
 };
@@ -40,7 +42,7 @@ exports.addPrefixToLogFuncs = function (logger, funcNames, prefix) {
 exports.addPrefixToCommonLogFuncs = function (logger, prefix) {
   return exports.addPrefixToLogFuncs(
     logger,
-    ['error', 'warn', 'info', 'verbose', 'debug', 'silly'],
+    ['error', 'warn', 'info', 'verbose', 'debug', 'silly', 'log'],
     prefix
   );
 };

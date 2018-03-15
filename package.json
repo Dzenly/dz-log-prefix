@@ -20,5 +20,8 @@
     "log"
   ],
   "author": "Dzenly <alexchem@yandex.ru>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "callsite": "^1.0.0"
+  }
 }

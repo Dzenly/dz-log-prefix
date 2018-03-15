@@ -9,7 +9,6 @@
  */
 exports.addPrefixToLogFunc = function (logger, funcName, prefix) {
   return function () {
-    console.log(funcName, arguments.length);
     const prefixArgIndex = funcName === 'log' ? 1 : 0;
     arguments[prefixArgIndex] = prefix + arguments[prefixArgIndex];
     return logger[funcName].apply(logger, arguments);

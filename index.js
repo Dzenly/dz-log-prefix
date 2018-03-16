@@ -14,7 +14,7 @@ function getSrcInfo(stack) {
   // let src = fs.readFileSync(file, 'utf8');
   // const line = src.split('\n')[lineno - 1].trim();
   return {
-    fileLineNo: `${file}: ${lineno}`,
+    fileLineNo: `${file}:${lineno}`,
 
     // line,
   };

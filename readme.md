@@ -4,5 +4,10 @@ For usage examples, see: https://github.com/Dzenly/dz-log-prefix/blob/master/tes
 
 #Environment variables
 
-DZLOGPREFIX_CALLSITE_ALL - Show callsite for all log levels.
-DZLOGPREFIX_CALLSITE_ERROR - Show callsite for error level only.
+* DZLOGPREFIX_CALLSITE_ALL - Show callsite for all log levels.
+E.g. 
+DZLOGPREFIX_CALLSITE_ALL=1
+
+* DZLOGPREFIX_CALLSITE - Show callsite for specified levels only
+(comma separated list of levels).
+E.g. DZLOGPREFIX_CALLSITE=error, warn.

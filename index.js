@@ -16,6 +16,22 @@ function getSrcInfo(stack) {
   };
 }
 
+const arrFuncs = ['error', 'warn', 'info', 'verbose', 'debug', 'silly', 'log'];
+const flagsShowCallsite = new Map();
+
+if (process.env.DZLOGPREFIX_CALLSITE_ALL) {
+  arrFuncs.forEach(function (funcName) {
+    flagsShowCallsite.set(funcName, true);
+  });
+}
+
+if (process.env.DZLOGPREFIX_CALLSITE) {
+  const funcNames = process.env.DZLOGPREFIX_CALLSITE.split(/,\s*/);
+  funcNames.forEach(function (funcName) {
+    flagsShowCallsite.set(funcName, true);
+  });
+}
+
 const token = Symbol();
 
 /**
@@ -27,14 +43,12 @@ const token = Symbol();
  */
 exports.addPrefixToLogFunc = function (logger, funcName, prefix = '') {
 
-  const showStack = Boolean(
-    process.env.DZLOGPREFIX_CALLSITE_ALL || (process.env.DZLOGPREFIX_CALLSITE_ERROR && funcName === 'error')
-  );
+  const showCallsite = Boolean(flagsShowCallsite.get(funcName));
 
   return function (...args) {
     const prefixArgIndex = funcName === 'log' ? 1 : 0;
 
-    if (showStack && args[args.length - 1] !== token) {
+    if (showCallsite && args[args.length - 1] !== token) {
       const {fileLineNo/*, line*/} = getSrcInfo(callsite());
       // LINE: ${line}${os.EOL}
       const suffix = `${os.EOL}FILE: ${fileLineNo}${os.EOL}`;
@@ -42,7 +56,7 @@ exports.addPrefixToLogFunc = function (logger, funcName, prefix = '') {
       args.push(token);
     }
 
-    if (!logger.dzPrefixedLogger && showStack) {
+    if (!logger.dzPrefixedLogger && showCallsite) {
       args.pop();
     }
 
@@ -78,7 +92,7 @@ exports.addPrefixToLogFuncs = function (logger, funcNames, prefix) {
 exports.addPrefixToCommonLogFuncs = function (logger, prefix) {
   return exports.addPrefixToLogFuncs(
     logger,
-    ['error', 'warn', 'info', 'verbose', 'debug', 'silly', 'log'],
+    arrFuncs,
     prefix
   );
 };

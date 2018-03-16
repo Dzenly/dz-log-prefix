@@ -1,17 +1,21 @@
 'use strict';
 
 const callsite = require('callsite');
+
 // const fs = require('fs');
-const os = require('os');
+const { EOL } = require('os');
+const { sep } = require('path');
 
 function getSrcInfo(stack) {
   const call = stack[1];
   const file = call.getFileName();
   const lineno = call.getLineNumber();
+
   // let src = fs.readFileSync(file, 'utf8');
   // const line = src.split('\n')[lineno - 1].trim();
   return {
     fileLineNo: `${file}: ${lineno}`,
+
     // line,
   };
 }
@@ -20,19 +24,22 @@ const arrFuncs = ['error', 'warn', 'info', 'verbose', 'debug', 'silly', 'log'];
 const flagsShowCallsite = new Map();
 
 if (process.env.DZLOGPREFIX_CALLSITE_ALL) {
-  arrFuncs.forEach(function (funcName) {
+  arrFuncs.forEach((funcName) => {
     flagsShowCallsite.set(funcName, true);
   });
 }
 
 if (process.env.DZLOGPREFIX_CALLSITE) {
   const funcNames = process.env.DZLOGPREFIX_CALLSITE.split(/,\s*/);
-  funcNames.forEach(function (funcName) {
+  funcNames.forEach((funcName) => {
     flagsShowCallsite.set(funcName, true);
   });
 }
 
-const token = Symbol();
+const noNodeModulesInStack = Boolean(process.env.DZLOGPREFIX_STACK_NO_NODE_MODULES);
+const nodeModulesStr = `${sep}node_modules${sep}`;
+
+const token = Symbol('forShowCallSite');
 
 /**
  * Creates a function wrapper for a logger function.
@@ -41,17 +48,16 @@ const token = Symbol();
  * @param {String} prefix - Prefix to add.
  * @return {Function} - A new function which logs with given prefix.
  */
-exports.addPrefixToLogFunc = function (logger, funcName, prefix = '') {
-
+exports.addPrefixToLogFunc = function addPrefixToLogFunc(logger, funcName, prefix = '') {
   const showCallsite = Boolean(flagsShowCallsite.get(funcName));
 
-  return function (...args) {
+  return function logWithPrefix(...args) {
     const prefixArgIndex = funcName === 'log' ? 1 : 0;
 
     if (showCallsite && args[args.length - 1] !== token) {
-      const {fileLineNo/*, line*/} = getSrcInfo(callsite());
-      // LINE: ${line}${os.EOL}
-      const suffix = `${os.EOL}FILE: ${fileLineNo}${os.EOL}`;
+      const { fileLineNo/* , line*/ } = getSrcInfo(callsite());
+      // LINE: ${line}${EOL}
+      const suffix = `${EOL}FILE: ${fileLineNo}${EOL}`;
       args[args.length - 1] += suffix;
       args.push(token);
     }
@@ -60,9 +66,25 @@ exports.addPrefixToLogFunc = function (logger, funcName, prefix = '') {
       args.pop();
     }
 
+    args = args.map((arg) => {
+      if (arg instanceof Error) {
+        let stack = arg.stack;
+        let stackArr = stack.split(EOL);
+        stackArr.shift();
+        if (noNodeModulesInStack) {
+          stackArr = stackArr.filter((line) => {
+            return line.indexOf(nodeModulesStr) === -1;
+          });
+        }
+        stack = stackArr.join(EOL);
+        arg = `${arg}${EOL}${stack}`;
+      }
+      return arg;
+    });
+
     args[prefixArgIndex] = prefix + args[prefixArgIndex];
 
-    return logger[funcName].apply(logger, args);
+    return logger[funcName](...args);
   };
 };
 
@@ -73,7 +95,7 @@ exports.addPrefixToLogFunc = function (logger, funcName, prefix = '') {
  * @param {String[]} funcNames - Array of function names, e.g. ['info', 'warn']
  * @param {String} prefix - Prefix to add.
  */
-exports.addPrefixToLogFuncs = function (logger, funcNames, prefix) {
+exports.addPrefixToLogFuncs = function addPrefixToLogFuncs(logger, funcNames, prefix) {
   const newLogger = { dzPrefixedLogger: true };
   funcNames.forEach((funcName) => {
     if (typeof logger[funcName] === 'function') {
@@ -89,7 +111,7 @@ exports.addPrefixToLogFuncs = function (logger, funcNames, prefix) {
  * @param {Object} logger - Logger object. E.g. winston.
  * @param {String} prefix - Prefix to add.
  */
-exports.addPrefixToCommonLogFuncs = function (logger, prefix) {
+exports.addPrefixToCommonLogFuncs = function addPrefixToCommonLogFuncs(logger, prefix) {
   return exports.addPrefixToLogFuncs(
     logger,
     arrFuncs,

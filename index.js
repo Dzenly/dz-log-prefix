@@ -57,8 +57,8 @@ exports.addPrefixToLogFunc = function addPrefixToLogFunc(logger, funcName, prefi
     if (showCallsite && args[args.length - 1] !== token) {
       const { fileLineNo/* , line*/ } = getSrcInfo(callsite());
       // LINE: ${line}${EOL}
-      const suffix = `${EOL}FILE: ${fileLineNo}${EOL}`;
-      args[args.length - 1] += suffix;
+      const fileLineNoStr = `${EOL}FILE: ${fileLineNo}${EOL}`;
+      args.push(fileLineNoStr);
       args.push(token);
     }
 

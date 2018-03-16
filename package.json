@@ -1,6 +1,6 @@
 {
   "name": "dz-log-prefix",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Adds prefix to logger functions.",
   "main": "index.js",
   "directories": {

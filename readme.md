@@ -15,3 +15,6 @@ E.g. DZLOGPREFIX_CALLSITE=error, warn.
 * DZLOGPREFIX_STACK_NO_NODE_MODULES - Do not show strings containing `node_modules`
 in call stacks for errors.
 E.g. DZLOGPREFIX_STACK_NO_NODE_MODULES=1
+
+* DZLOGPREFIX_CALLSITE_DEPTH - The stack depth to print when DZLOGPREFIX_CALLSITE
+or DZLOGPREFIX_CALLSITE_ALL are used. 1 is by default.

@@ -1,23 +1,49 @@
 'use strict';
 
 const callsite = require('callsite');
-
-// const fs = require('fs');
 const { EOL } = require('os');
 const { sep } = require('path');
 
+const callsiteStackDepth = process.env.DZLOGPREFIX_CALLSITE_DEPTH || 1;
+
+// function frameInfo(frame) {
+//   return {
+//     getThis: frame.getThis(),
+//
+//     getTypeName: frame.getTypeName(),
+//     getFunction: frame.getFunction(),
+//     getFunctionName: frame.getFunctionName(),
+//     getMethodName: frame.getMethodName(),
+//     getFileName: frame.getFileName(),
+//     getLineNumber: frame.getLineNumber(),
+//     getColumnNumber: frame.getColumnNumber(),
+//     getEvalOrigin: frame.getEvalOrigin(),
+//     isToplevel: frame.isToplevel(),
+//     isEval: frame.isEval(),
+//     isNative: frame.isNative(),
+//     isConstructor: frame.isConstructor(),
+//   };
+// }
+
 function getSrcInfo(stack) {
-  const call = stack[1];
-  const file = call.getFileName();
-  const lineno = call.getLineNumber();
 
-  // let src = fs.readFileSync(file, 'utf8');
-  // const line = src.split('\n')[lineno - 1].trim();
-  return {
-    fileLineNo: `${file}:${lineno}`,
+  const fileLineNoArr = [];
 
-    // line,
-  };
+  const end = Math.min(callsiteStackDepth, stack.length - 1);
+
+  for (let i = 1; i <= end; ++i)
+  {
+    const call = stack[i];
+
+    // console.log(frameInfo(call));
+
+    const file = call.getFileName();
+    const lineno = call.getLineNumber();
+    const fileLineNoStr = `${EOL}FILE: ${file}:${lineno}`;
+    fileLineNoArr.push(fileLineNoStr);
+  }
+
+  return fileLineNoArr.join('') + EOL;
 }
 
 const arrFuncs = ['error', 'warn', 'info', 'verbose', 'debug', 'silly', 'log'];
@@ -55,10 +81,8 @@ exports.addPrefixToLogFunc = function addPrefixToLogFunc(logger, funcName, prefi
     const prefixArgIndex = funcName === 'log' ? 1 : 0;
 
     if (showCallsite && args[args.length - 1] !== token) {
-      const { fileLineNo/* , line*/ } = getSrcInfo(callsite());
-      // LINE: ${line}${EOL}
-      const fileLineNoStr = `${EOL}FILE: ${fileLineNo}${EOL}`;
-      args.push(fileLineNoStr);
+      const fileLineNo = getSrcInfo(callsite());
+      args.push(fileLineNo);
       args.push(token);
     }
 

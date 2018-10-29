@@ -118,9 +118,13 @@ exports.addPrefixToLogFunc = function addPrefixToLogFunc(logger, funcName, prefi
  * @param {Object} logger - Logger object. E.g. winston.
  * @param {String[]} funcNames - Array of function names, e.g. ['info', 'warn']
  * @param {String} prefix - Prefix to add.
+ * @param {String} scope - Scope for tracing.
  */
-exports.addPrefixToLogFuncs = function addPrefixToLogFuncs(logger, funcNames, prefix) {
-  const newLogger = { dzPrefixedLogger: true };
+exports.addPrefixToLogFuncs = function addPrefixToLogFuncs(logger, funcNames, prefix, scope) {
+  const newLogger = {
+    dzPrefixedLogger: true,
+    dzScope: logger.dzScope ? `${logger.dzScope}.${scope}` : scope,
+  };
   funcNames.forEach((funcName) => {
     if (typeof logger[funcName] === 'function') {
       newLogger[funcName] = exports.addPrefixToLogFunc(logger, funcName, prefix);
@@ -134,11 +138,13 @@ exports.addPrefixToLogFuncs = function addPrefixToLogFuncs(logger, funcNames, pr
  * add a given prefix to log strings.
  * @param {Object} logger - Logger object. E.g. winston.
  * @param {String} prefix - Prefix to add.
+ * @param {String} scope - scope for trace.
  */
-exports.addPrefixToCommonLogFuncs = function addPrefixToCommonLogFuncs(logger, prefix) {
+exports.addPrefixToCommonLogFuncs = function addPrefixToCommonLogFuncs(logger, prefix, scope) {
   return exports.addPrefixToLogFuncs(
     logger,
     arrFuncs,
-    prefix
+    prefix,
+    scope,
   );
 };

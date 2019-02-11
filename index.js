@@ -91,7 +91,7 @@ exports.addPrefixToLogFunc = function addPrefixToLogFunc(logger, funcName, prefi
     }
 
     args = args.map((arg) => {
-      if (arg instanceof Error) {
+      if ((arg instanceof Error) && arg.stack) {
         let stack = arg.stack;
         let stackArr = stack.split(EOL);
         stackArr.shift();
